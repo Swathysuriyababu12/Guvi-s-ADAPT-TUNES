@@ -13,6 +13,7 @@
         background-color: #f9f9f9;
         color: #333;
       }
+
       body {
         font-family: Arial, sans-serif;
         text-align: center;
@@ -108,48 +109,77 @@
       <button onclick="pickRandom()">let's go !</button>
     </div>
 
-    <audio id="background-music" src="music.mpeg"></audio>
+    <audio id="background-music"></audio>
 
     <script>
+      let groupResetTimer;
+
       async function pickRandom() {
         try {
           const loader = document.getElementById("loader");
           const groupInfoDiv = document.getElementById("group-info");
           const music = document.getElementById("background-music");
 
-          // Show loader and play music
+          // Array of music tracks
+          const musicTracks = [
+            "music.mpeg", // replace with actual track URLs or file paths
+            "music2.mp4",
+            "music4.mpeg",
+          ];
+
+          // Function to pick a random track
+          function getRandomTrack() {
+            const randomIndex = Math.floor(Math.random() * musicTracks.length);
+            return musicTracks[randomIndex];
+          }
+
+          // Show loader and play random music
           loader.style.display = "block";
+          const randomTrack = getRandomTrack();
+          music.src = randomTrack;
           music.play();
 
           // Fetch JSON data
           const response = await fetch("groups.json");
           const data = await response.json();
-          const groups = data.groups;
+          let groups = data.groups;
+
+          // Function to pick a random group and remove it from the array
+          function pickRandomGroup(groups) {
+            const randomIndex = Math.floor(Math.random() * groups.length);
+            const selectedGroup = groups.splice(randomIndex, 1)[0]; // Removes the group from the array
+            return selectedGroup;
+          }
 
           // Wait for 28 seconds
           await new Promise((resolve) => setTimeout(resolve, 28000));
 
-          // Stop music
+          // Stop music after 28 seconds
           music.pause();
           music.currentTime = 0;
 
-          // Randomly select a group
-          const randomGroupIndex = Math.floor(Math.random() * groups.length);
-          const selectedGroup = groups[randomGroupIndex];
+          // Randomly select and remove a group
+          const selectedGroup = pickRandomGroup(groups);
 
           // Display the group name and members
-          groupInfoDiv.innerHTML = `
-                    <strong>Group:</strong> ${selectedGroup.groupName} <br>
-                    <strong>Members:</strong>
-                    <ul>
-                        ${selectedGroup.members
-                          .map((member) => `<li>${member}</li>`)
-                          .join("")}
-                    </ul>
-                `;
+          groupInfoDiv.innerHTML = ` 
+                <strong>Group:</strong> ${selectedGroup.groupName} <br>
+                <strong>Members:</strong>
+                <ul>
+                    ${selectedGroup.members
+                      .map((member) => `<li>${member}</li>`)
+                      .join("")}
+                </ul>
+            `;
 
           // Hide loader
           loader.style.display = "none";
+
+          // Reset the div back to the initial state after 3 minutes
+          groupResetTimer = setTimeout(() => {
+            groupInfoDiv.innerHTML = ""; // Clear the group info
+            loader.style.display = "none"; // Hide the loader
+          }, 180000); // 3 minutes in milliseconds
         } catch (error) {
           console.error("Error:", error);
           document.getElementById("group-info").innerText =
@@ -157,6 +187,11 @@
           document.getElementById("loader").style.display = "none";
         }
       }
+
+      // Clear any existing reset timer when the page is reloaded or a new random group is selected
+      window.onbeforeunload = function () {
+        clearTimeout(groupResetTimer);
+      };
     </script>
   </body>
 </html>
