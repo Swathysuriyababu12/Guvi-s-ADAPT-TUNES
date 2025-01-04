@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GUVI'S ADAPT TUNES</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+        color: #333;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        background: url("bg.jpg") no-repeat center center fixed;
+        background-size: cover; /* This ensures the image covers the entire page */
+        color: #333;
+      }
+
+      header {
+        background-color: #4caf50;
+        color: white;
+        padding: 20px 0;
+        font-size: 2rem;
+        font-weight: bold;
+      }
+
+      .container {
+        margin: 200px auto;
+        width: 80%;
+        max-width: 600px;
+        text-align: center;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .group-info {
+        margin: 20px 0;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+        font-size: 1.2rem;
+        margin: 10px 0;
+      }
+
+      ul li {
+        margin: 5px 0;
+        padding: 5px 10px;
+        background: #f0f0f0;
+        border-radius: 5px;
+      }
+
+      button {
+        display: block;
+        margin: 20px auto;
+        padding: 12px 25px;
+        font-size: 1rem;
+        cursor: pointer;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      #loader {
+        display: none;
+        margin: 20px auto;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #4caf50;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>GUVI'S ADAPT TUNES</header>
+    <div class="container">
+      <div class="group-info" id="group-info"></div>
+      <div id="loader"></div>
+      <button onclick="pickRandom()">let's go !</button>
+    </div>
+
+    <audio id="background-music" src="music.mpeg"></audio>
+
+    <script>
+      async function pickRandom() {
+        try {
+          const loader = document.getElementById("loader");
+          const groupInfoDiv = document.getElementById("group-info");
+          const music = document.getElementById("background-music");
+
+          // Show loader and play music
+          loader.style.display = "block";
+          music.play();
+
+          // Fetch JSON data
+          const response = await fetch("groups.json");
+          const data = await response.json();
+          const groups = data.groups;
+
+          // Wait for 28 seconds
+          await new Promise((resolve) => setTimeout(resolve, 28000));
+
+          // Stop music
+          music.pause();
+          music.currentTime = 0;
+
+          // Randomly select a group
+          const randomGroupIndex = Math.floor(Math.random() * groups.length);
+          const selectedGroup = groups[randomGroupIndex];
+
+          // Display the group name and members
+          groupInfoDiv.innerHTML = `
+                    <strong>Group:</strong> ${selectedGroup.groupName} <br>
+                    <strong>Members:</strong>
+                    <ul>
+                        ${selectedGroup.members
+                          .map((member) => `<li>${member}</li>`)
+                          .join("")}
+                    </ul>
+                `;
+
+          // Hide loader
+          loader.style.display = "none";
+        } catch (error) {
+          console.error("Error:", error);
+          document.getElementById("group-info").innerText =
+            "Error loading data. Please check the console.";
+          document.getElementById("loader").style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>
