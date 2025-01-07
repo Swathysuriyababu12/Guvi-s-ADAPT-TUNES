@@ -19,7 +19,19 @@
     },
     {
       "groupName": "DEV - HR",
-      "members": ["Sahithya B A - DEV", "JAIME - HR"]
+      "members": ["Sahithya B A - DEV", "JAIME - HR", "Deepthi"]
+    },
+    {
+      "groupName": "DEV",
+      "members": ["Gokul Raj", "Ragul", "ebinesh"]
+    },
+    {
+      "groupName": "DEV",
+      "members": ["Gangamandan", "pradeep chendramouli"]
+    },
+    {
+      "groupName": "DEV",
+      "members": ["Bharat", "jawagarsrinivas"]
     }
   ]
 }
